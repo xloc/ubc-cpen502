@@ -19,10 +19,7 @@ public class Layer {
     }
 
     public double[] forwardPropagate(double[] x){
-        double[] y = MatrixMath.matvecmul(weights, x);
-        for (int i = 0; i < y.length; i++) {
-            y[i] = activation(y[i]);
-        }
+        double[] y = predict(x);
         this.y = y;
         this.x = x;
         return y;
