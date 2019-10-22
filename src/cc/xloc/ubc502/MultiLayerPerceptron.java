@@ -24,7 +24,7 @@ public class MultiLayerPerceptron {
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    public void train(double[][] X, double[][] y, int maxEpochs, double lr) {
+    public void train(double[][] X, double[][] y, int maxEpochs, double stopCost, double lr) {
         for (int i_epoch = 0; i_epoch < maxEpochs; i_epoch++) {
             double cost = 0;
             double[][] outputs = new double[X.length][];
@@ -47,7 +47,7 @@ public class MultiLayerPerceptron {
             }
             for (Layer l :layers) l.endEpoch(lr);
 
-            if (cost <= 1e-2) {
+            if (cost <= stopCost) {
                 System.out.println(String.format("Cost:      %.10f", cost));
                 System.out.println(String.format("Iteration: %d", i_epoch));
                 break;

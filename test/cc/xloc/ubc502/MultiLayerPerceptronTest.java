@@ -14,8 +14,8 @@ class MultiLayerPerceptronTest {
         double[][] y_train = { {0},{1},{1},{0} };
 
         MultiLayerPerceptron mlp = new MultiLayerPerceptron(2,4,1);
-        mlp.randomInitializeWeights(1, false);
-        mlp.train(X_train, y_train, 100000, 1);
+        mlp.randomInitializeWeights(0.5, true);
+        mlp.train(X_train, y_train, 100000, 0.05, 0.2);
         System.out.println(String.format("Accuracy:  %f", mlp.evaluate(X_train, y_train)));
     }
 
@@ -27,7 +27,7 @@ class MultiLayerPerceptronTest {
 
         MultiLayerPerceptron mlp = new MultiLayerPerceptron(2,4,1);
         mlp.randomInitializeWeights(1, true);
-        mlp.train(X_train, y_train, 100000, 1);
+        mlp.train(X_train, y_train, 100000, 0.05, 1);
         System.out.println(String.format("Accuracy:  %f", mlp.evaluate(X_train, y_train)));
     }
 }
