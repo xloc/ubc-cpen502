@@ -1,5 +1,6 @@
 package cc.xloc.ubc502;
 
+import cc.xloc.ubc502.activation.SigmoidActivation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ class LayerTest {
             Arrays.fill(wi, 0);
         }
 
-        Layer.randomInitializeWeight(w, 0.1, true);
+        Layer.randomInitializeWeight(w, 0.1);
         assertTrue(assert2DArrayNotEqual(w, 0));
     }
 
@@ -46,7 +47,7 @@ class LayerTest {
 
     @Test
     void forwardPropagate() {
-        Layer l = new Layer(2,2);
+        Layer l = new Layer(new SigmoidActivation(), 2,2);
         double[] d = {1,1};
         l.weights = new double[][] {
                 {1,1},

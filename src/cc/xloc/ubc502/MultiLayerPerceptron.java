@@ -1,30 +1,35 @@
 package cc.xloc.ubc502;
 
+import cc.xloc.ubc502.activation.Activation;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
 public class MultiLayerPerceptron {
+    private static final Logger COST_LOGGER = Logger.getLogger("MultiLayerPerceptron:cost");
+    private static final Logger ITER_LOGGER = Logger.getLogger("MultiLayerPerceptron:iter");
 
     private ArrayList<Layer> layers = new ArrayList<>();
     private Layer outputLayer;
 
-    public MultiLayerPerceptron(int ...nNeurons) {
+    public MultiLayerPerceptron(Activation activation, int ...nNeurons) {
         assert nNeurons.length > 1;
         for (int i = 0; i < nNeurons.length - 1; i++) {
-            layers.add(new Layer(nNeurons[i], nNeurons[i+1]));
+            layers.add(new Layer(activation, nNeurons[i], nNeurons[i+1]));
         }
         outputLayer = layers.get(layers.size()-1);
     }
 
-    public void randomInitializeWeights(double epsilon, boolean isBilinear){
+    public void randomInitializeWeights(double epsilon){
         for (Layer l :layers) {
-            l.initializeWeight(epsilon, isBilinear);
+            l.initializeWeight(epsilon);
         }
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    public void train(double[][] X, double[][] y, int maxEpochs, double stopCost, double lr) {
+    public void train(double[][] X, double[][] y, int maxEpochs, double stopCost, double lr, double momentum) {
         for (int i_epoch = 0; i_epoch < maxEpochs; i_epoch++) {
             double cost = 0;
             double[][] outputs = new double[X.length][];
@@ -45,15 +50,70 @@ public class MultiLayerPerceptron {
                 for (int i_layer = layers.size()-1; i_layer >= 0; i_layer--)
                     connection = layers.get(i_layer).backPropagate(connection);
             }
-            for (Layer l :layers) l.endEpoch(lr);
+            for (Layer l :layers) l.endEpoch(lr, momentum);
 
+//            System.out.println(String.format("Cost:      %.10f", cost));
+            COST_LOGGER.info(String.format("%f", cost));
+            if (cost <= stopCost) {
+                System.out.println(String.format("Cost:      %.10f", cost));
+                System.out.println(String.format("Iteration: %d", i_epoch));
+                ITER_LOGGER.info(String.format("%d", i_epoch));
+                break;
+            }
+
+        }
+    }
+
+    public void train_2_forwards(double[][] X, double[][] Y, int maxEpochs, double stopCost, double lr, double momentum) {
+        Layer l1 = layers.get(0);
+        Layer l2 = layers.get(1);
+
+        for (int i_epoch = 0; i_epoch < maxEpochs; i_epoch++) {
+            double cost = 0;
+
+            l1.startEpoch();
+            l2.startEpoch();
+
+            double[] a1 = null, a2 = null, residual = null;
+            // for each element
+            for (int i = 0; i < X.length; i++) {
+                double[] x = X[i];
+                double[] y = Y[i];
+
+                a1 = l1.forwardPropagate(x);
+                a2 = l2.forwardPropagate(a1);
+
+                residual = MatrixMath.vecsub(a2, y);
+
+                l2.backPropagate(residual);
+            }
+            l2.endEpoch(lr, momentum);
+
+            l1.startEpoch();
+            // for each element
+            for (int i = 0; i < X.length; i++) {
+                double[] x = X[i];
+                double[] y = Y[i];
+
+                a1 = l1.forwardPropagate(x);
+                a2 = l2.forwardPropagate(a1);
+                residual = MatrixMath.vecsub(a2, y);
+                cost += Arrays.stream(residual).map(a -> a * a).sum();
+
+                double[] residual2 = l2.backPropagate(residual);
+                double[] residual3 = l1.backPropagate(residual2);
+                System.out.println(Arrays.toString(residual3));
+            }
+            l1.endEpoch(lr, momentum);
+
+            COST_LOGGER.info(String.format("%f", cost));
             if (cost <= stopCost) {
                 System.out.println(String.format("Cost:      %.10f", cost));
                 System.out.println(String.format("Iteration: %d", i_epoch));
                 break;
             }
-
         }
+
     }
 
     public double[][] predict(double[][] X) {

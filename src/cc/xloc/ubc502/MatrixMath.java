@@ -33,4 +33,17 @@ public class MatrixMath {
         }
         return result;
     }
+
+    public static double[] vecsub(double[] a, double[] b) {
+        int len = a.length;
+        assert len == b.length;
+
+        double[] result = new double[len];
+        for (int i = 0; i < len; i++) {
+            result[i] = a[i] - b[i];
+        }
+
+        return result;
+    }
+
 }
