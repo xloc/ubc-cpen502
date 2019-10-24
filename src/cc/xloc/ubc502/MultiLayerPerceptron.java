@@ -102,7 +102,6 @@ public class MultiLayerPerceptron {
 
                 double[] residual2 = l2.backPropagate(residual);
                 double[] residual3 = l1.backPropagate(residual2);
-                System.out.println(Arrays.toString(residual3));
             }
             l1.endEpoch(lr, momentum);
 

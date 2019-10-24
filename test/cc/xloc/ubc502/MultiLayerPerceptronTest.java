@@ -46,9 +46,7 @@ class MultiLayerPerceptronTest {
     @Test
     void train_bipolar() {
         double[][] X_train = { {-1,-1}, {-1,1}, {1,-1}, {1,1} };
-//        double[][] X_train = { {0,0}, {0,1}, {1,0}, {1,1} };
         double[][] y_train = { {-1},{1},{1},{-1} };
-//        double[][] y_train = { {0},{1},{1},{0} };
         Activation activation = new BipolarSigmoidActivation();
 
         MultiLayerPerceptron mlp = new MultiLayerPerceptron(activation, 2,4,1);

@@ -19,7 +19,7 @@ public class Layer {
         this.nOutput = nOutput;
         this.activation = activation;
 
-        weights = new double[nOutput][nInput];
+        weights = new double[nOutput][nInput+1];
         bias = new double[nInput];
     }
 
@@ -27,13 +27,26 @@ public class Layer {
         randomInitializeWeight(weights, epsilon);
     }
 
+    private double[] xAddBias(double[] x){
+        double[] x_biased = new double[nInput + 1];
+        System.arraycopy(x, 0, x_biased, 0, x.length);
+        x_biased[nInput] = 1;
+        return x_biased;
+    }
+
+    private double[] xRemoveBias(double[] x_biased){
+        double[] x = new double[nInput];
+        System.arraycopy(x_biased, 0, x, 0, nInput);
+        return x;
+    }
+
     public double[] forwardPropagate(double[] x){
         // x: input
         // a: linear-combination W@x
         // y: after-activation f(a)
-        this.a = MatrixMath.matvecmul(weights, x);
+        this.x = xAddBias(x);
+        this.a = MatrixMath.matvecmul(weights, this.x);
         this.y = Arrays.stream(a).map(a_i -> activation.f(a_i)).toArray();
-        this.x = x;
         return y;
     }
 
@@ -44,8 +57,8 @@ public class Layer {
     double[] x;
     public void startEpoch() {
         if (last_weightChange == null)
-            last_weightChange = new double[nOutput][nInput];
-        gradient_w = new double[nOutput][nInput];
+            last_weightChange = new double[nOutput][nInput+1];
+        gradient_w = new double[nOutput][nInput+1];
         y = null;
         x = null;
     }
@@ -62,8 +75,8 @@ public class Layer {
     }
 
     public double[] backPropagate(double[] residual){
-        double[] lastLayer_residual = new double[nInput];
-        for (int k = 0; k < nInput; k++) {
+        double[] lastLayer_residual = new double[nInput+1];
+        for (int k = 0; k < nInput+1; k++) {
             for (int j = 0; j < nOutput; j++) {
                 // <?>_p_<?> => d(?) / d(?)
                 double cost_p_acti = residual[j];
@@ -78,7 +91,7 @@ public class Layer {
             }
 
         }
-        return lastLayer_residual;
+        return xRemoveBias(lastLayer_residual);
     }
 
     public double[][] predict(double[][] X) {
@@ -90,7 +103,7 @@ public class Layer {
     }
 
     public double[] predict(double[] x){
-        double[] result =  MatrixMath.matvecmul(weights, x);
+        double[] result =  MatrixMath.matvecmul(weights, xAddBias(x));
         for (int i = 0; i < result.length; i++) {
             result[i] = activation.f(result[i]);
         }
