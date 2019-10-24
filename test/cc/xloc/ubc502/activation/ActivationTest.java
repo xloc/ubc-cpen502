@@ -15,6 +15,7 @@ class ActivationTest {
         testSigmoidLikeActivation(new BipolarSigmoidActivation());
         testSigmoidLikeActivation(new SigmoidActivation());
         testActivation(new TanhActivation());
+        testActivation(new SmoothedReLUActivation());
     }
 
     void testActivation(Activation act) {

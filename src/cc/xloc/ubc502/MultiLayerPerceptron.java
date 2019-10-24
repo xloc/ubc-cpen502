@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 public class MultiLayerPerceptron {
     private static final Logger COST_LOGGER = Logger.getLogger("MultiLayerPerceptron:cost");
     private static final Logger ITER_LOGGER = Logger.getLogger("MultiLayerPerceptron:iter");
+    private static final Logger LOGGER = Logger.getLogger("MultiLayerPerceptron");
 
     private ArrayList<Layer> layers = new ArrayList<>();
     private Layer outputLayer;
@@ -52,11 +53,10 @@ public class MultiLayerPerceptron {
             }
             for (Layer l :layers) l.endEpoch(lr, momentum);
 
-//            System.out.println(String.format("Cost:      %.10f", cost));
             COST_LOGGER.info(String.format("%f", cost));
             if (cost <= stopCost) {
-                System.out.println(String.format("Cost:      %.10f", cost));
-                System.out.println(String.format("Iteration: %d", i_epoch));
+                LOGGER.info(String.format("Cost:      %.10f", cost));
+                LOGGER.info(String.format("Iteration: %d", i_epoch));
                 ITER_LOGGER.info(String.format("%d", i_epoch));
                 break;
             }
@@ -107,8 +107,9 @@ public class MultiLayerPerceptron {
 
             COST_LOGGER.info(String.format("%f", cost));
             if (cost <= stopCost) {
-                System.out.println(String.format("Cost:      %.10f", cost));
-                System.out.println(String.format("Iteration: %d", i_epoch));
+                LOGGER.info(String.format("Cost:      %.10f", cost));
+                LOGGER.info(String.format("Iteration: %d", i_epoch));
+                ITER_LOGGER.info(String.format("%d", i_epoch));
                 break;
             }
         }
