@@ -35,6 +35,15 @@ class MultiLayerPerceptronTest {
     }
 
     @Test
+    void trainBipolarMomentum(){
+        useCostLogger(true, "/Users/oliver/Downloads/mlp_bipolar_momentum");
+        useIterLogger(false, "/Users/oliver/Downloads/mlp_iters_stats");
+        useGeneralLogger(true);
+
+        trainBipolar(new BipolarSigmoidActivation(), 0.5, 0.2, 0.9);
+    }
+
+    @Test
     void trainBipolar(){
         useCostLogger(true, "/Users/oliver/Downloads/mlp_bipolar_sigmoid");
         useIterLogger(false, "/Users/oliver/Downloads/mlp_iters_stats");
